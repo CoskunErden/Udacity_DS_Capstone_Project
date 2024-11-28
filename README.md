@@ -1,5 +1,7 @@
 # Udacity Data Science Capstone Project
 
+[Visit the Blog for Full Details](https://coskunerden.github.io/Udacity_DS_Capstone_Project/)
+
 ## Project Overview
 
 This project is part of the Udacity Data Science Capstone. It focuses on analyzing customer behavior using simulated Starbucks data. The goal is to determine how different demographic groups respond to various types of offers and develop strategies to target customers more effectively.
