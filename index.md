@@ -63,7 +63,7 @@ The primary goal is to identify the most responsive customer groups and optimize
 
 ### Exploratory Data Analysis  
 - **Correlations:**  
-(images/CorrelationReport.png)
+![Correlation Heatmap](images/CorrelationReport.png)
   Timing and duration exhibited strong correlations with offer completion rates. Longer durations and well-timed offers are more likely to succeed.  
 
 - **Event Analysis:**  
@@ -100,7 +100,7 @@ Key features included:
 
 ### Model Performance  
 
-(images/ModelPerformanceSummary.png) 
+![Model Performance](images/ModelPerformanceSummary.png)
 
 ### Insights  
 1. Gradient Boosting achieved the best balance between precision, recall, and F1-Score, making it ideal for handling class imbalance.  
