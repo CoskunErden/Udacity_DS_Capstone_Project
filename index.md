@@ -61,13 +61,6 @@ Metrics used:
 ## Results
 ![Model Performance Summary](images/ModelPerformanceSummary.png)
 
-| Model              | Precision (Minority Class) | Recall (Minority Class) | F1 Score (Minority Class) | Overall Accuracy |
-|--------------------|---------------------------|-------------------------|--------------------------|------------------|
-| Logistic Regression| 0.26                      | 0.99                    | 0.41                     | 0.67             |
-| Random Forest      | 0.32                      | 0.66                    | 0.44                     | 0.80             |
-| Gradient Boosting  | 0.64                      | 0.58                    | 0.61                     | 0.91             |
-| SVM                | 1.00                      | 0.00                    | 0.00                     | 0.88             |
-| XGBoost            | 0.49                      | 0.91                    | 0.64                     | 0.88             |
 
 ## Discussion and Insights
 ### Key Observations
