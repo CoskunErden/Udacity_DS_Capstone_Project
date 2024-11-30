@@ -347,22 +347,58 @@ New features were engineered to enhance the dataset's utility. **Binary columns*
 
 ---
 
+### Missing Values
 
+In this section, I systematically addressed missing values in the dataset to ensure the data's completeness and integrity for analysis and modeling purposes. The primary tasks performed included:
 
+1. **Visualizing Missing Values:**
+   - A heatmap of missing values (Figure 1) was created to identify patterns and the extent of missingness across the dataset. The visualization revealed that columns such as `amount`, `reward_earned`, and `offer_id` had substantial missing values due to their relevance only to specific events (e.g., transactions or rewards).
 
-### Exploratory Data Analysis  
-- **Correlations:**  
-![Correlation Heatmap](images/CorrelationReport.png)
-  Timing and duration exhibited strong correlations with offer completion rates. Longer durations and well-timed offers are more likely to succeed.  
+   **Figure 1: Heatmap of Missing Values**
+   ![Heatmap of Missing Values](images/MissingValuesHeatmap.png)
 
-- **Event Analysis:**  
-  A significant drop-off was observed between offers viewed and completed, highlighting areas for optimization.  
+2. **Handling Missing Values in Categorical Columns:**
+   - For the `gender` column, missing entries were filled with the value `"Unknown"`, ensuring categorical integrity and enabling the inclusion of these entries in demographic analyses.
+   - Similarly, missing values in `offer_id` and `offer_type` were assigned `"Unknown"` to differentiate missing data from valid entries effectively.
 
-- **Demographic Trends:**  
-  - Gender distribution was nearly even, with males completing slightly more discount offers.  
-  - Customers in the 'Mid-Career' age group demonstrated higher completion rates.  
+3. **Filling Numerical Missing Values:**
+   - For columns such as `amount` and `reward_earned`, missing values were replaced with `0`. This approach ensured that non-applicable entries (e.g., no transaction or no reward) were accurately represented, avoiding distortions in the analysis.
+   - Columns like `reward_offer`, `difficulty`, and `duration` were also filled with `0` to handle instances where offers were not completed or applicable, ensuring consistency.
 
+4. **Imputation of Age and Recreation of Age Categories:**
+   - The `age` column was imputed with the median value to account for missing entries, preserving the dataset's demographic information.
+   - An additional flag column (`age_imputed`) was created to indicate whether an age value was imputed or not.
+   - The `age_cat` column was recreated based on the imputed `age` values, categorizing individuals into meaningful demographic segments (e.g., young adult, early career).
+
+   **Figure 2: Age Categorization**
+   ![Imputation and Age Categories](images/BarAgeCategorization.png)
+
+5. **Dataset Creation Without Missing Values:**
+   - A new dataset (`df_nonull`) was prepared by dropping rows with missing values in critical columns (`age`, `income`, `age_cat`). This dataset ensures completeness for models requiring clean inputs.
+
+6. **Reordering Columns for Analytical Ease:**
+   - Columns were reordered to place frequently analyzed features like `income`, `time`, and `age` at the end of the DataFrame, improving usability during subsequent analysis.
+
+   **Figure 3: Reordered Dataset**
+   ![Reordered Dataset](images/DatasetWithoutMissingValues.png)
+
+By carefully managing missing values, this process has improved the dataset's usability and prepared it for advanced exploratory analysis and modeling. Let me know if you would like more insights or a deeper dive into the preprocessing steps.
 ---
+In the `nonull_df` dataset, the heatmap illustrates the correlation between several key continuous features:
+![CorrelationReport](images/CorrelationReport.png)
+1. **Strong Positive Correlation**:
+   - Variables such as `difficulty`, `duration`, and `no_channels` exhibit strong positive correlations with each other. This suggests that offers with higher difficulty are often associated with longer durations and require more engagement channels for completion. These features are likely interconnected in designing more complex or demanding offers.
+
+2. **Moderate Positive Correlation**:
+   - The `reward_offer` variable shows a moderate correlation with `difficulty`, `duration`, and `no_channels`. This indicates that as the reward amount increases, the offers tend to be more challenging, involve more channels, or have longer durations, which aligns with the idea that higher rewards may incentivize more effort from users.
+
+3. **Low or Negligible Correlation**:
+   - Other features, such as `membership_duration` and `time`, show low or negligible correlations with most variables. This implies that these features may operate independently, without strong interdependencies with offer-related attributes.
+
+4. **Implications for Analysis**:
+   - These correlations provide valuable insights for predictive modeling and feature selection. For instance, the clustering of highly correlated variables (`difficulty`, `duration`, `no_channels`) may necessitate careful handling, such as dimensionality reduction, to prevent multicollinearity issues. On the other hand, independent variables like `membership_duration` could contribute unique explanatory power to models predicting user behavior or offer completion.
+
+This correlation analysis serves as a foundation for understanding the interplay between offer characteristics and user engagement, guiding further exploration and modeling efforts.
 
 ## Methodology  
 
