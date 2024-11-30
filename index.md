@@ -386,6 +386,7 @@ By carefully managing missing values, this process has improved the dataset's us
 ---
 In the `nonull_df` dataset, the heatmap illustrates the correlation between several key continuous features:
 ![CorrelationReport](images/CorrelationReport.png)
+
 1. **Strong Positive Correlation**:
    - Variables such as `difficulty`, `duration`, and `no_channels` exhibit strong positive correlations with each other. This suggests that offers with higher difficulty are often associated with longer durations and require more engagement channels for completion. These features are likely interconnected in designing more complex or demanding offers.
 
@@ -403,53 +404,367 @@ This correlation analysis serves as a foundation for understanding the interplay
 ## Methodology  
 
 ### Feature Selection  
-Key features included:  
-- **Continuous:** Time, duration, difficulty, income  
-- **Categorical:** Offer type, age categories, gender, channel indicators  
+### Data Splitting and Logistic Regression Process: Results and Interpretations
 
-### Models Evaluated  
-1. **Logistic Regression:** A baseline model for comparison.  
-2. **Random Forest:** Robust but less effective with imbalanced datasets.  
-3. **Gradient Boosting:** Best performer with balanced metrics.  
-4. **SVM:** Struggled with class imbalance.  
-5. **XGBoost:** Strong alternative with high recall.  
+#### Preprocessing Before Data Splitting
 
-### Evaluation Metrics  
-1. **Accuracy:** Measures overall correctness but can be misleading in imbalanced datasets.  
-2. **F1-Score:** Balances precision and recall, critical for the minority class.  
-3. **Precision & Recall:** Evaluate false positives and negatives, respectively.  
+1. **Key Features:**
+   - **Continuous Variables:** These include features such as `time`, `duration`, `difficulty`, and `income`. These features represent numerical values critical for capturing quantitative relationships in the data.
+   - **Categorical Variables:** Variables like `offer_type`, `age categories (age_cat)`, `gender`, and channel indicators (`web`, `email`, `mobile`, and `social`) were included to capture qualitative aspects of the dataset.
 
----
+2. **One-Hot Encoding:**
+   - Categorical variables, such as `gender`, `age_cat`, and `offer_type`, were one-hot encoded, resulting in 24 features after encoding. 
+   - This step transformed the data into a numerical format suitable for logistic regression, ensuring no ordinal relationships were assumed between categorical variables.
 
-## Results  
+3. **Data Splitting:**
 
-### Model Performance  
+- The dataset was split into training (80%) and testing (20%) subsets, using a fixed random state for reproducibility.
+- The training set contained 80% of the observations for model fitting, while the testing set comprised 20% for performance evaluation.
 
-![Model Performance](images/ModelPerformanceSummary.png)
-
-### Insights  
-1. Gradient Boosting achieved the best balance between precision, recall, and F1-Score, making it ideal for handling class imbalance.  
-2. Timing and duration emerged as the most important factors influencing offer completion.  
+3. **Feature Scaling:**
+   - Continuous variables (`income`, `time`, `age`, `reward_offer`, `difficulty`, `duration`, `no_channels`, and `membership_duration`) were standardized using a `StandardScaler`.
+   - Scaling ensures these variables have a mean of 0 and a standard deviation of 1, preventing any single variable from dominating due to differences in scale.
 
 ---
 
-## Recommendations  
 
-### Short-Term Actions  
-1. Deploy Gradient Boosting predictions for upcoming campaigns.  
-2. Simplify offers to reduce difficulty levels and extend durations.  
-3. Optimize timing based on customer activity patterns.  
+#### Logistic Regression Results
 
-### Long-Term Strategies  
-1. Incorporate advanced sampling techniques like SMOTE to address class imbalance.  
-2. Develop dynamic recommendation systems for personalized offer targeting.  
-3. Analyze seasonal trends to align campaigns with peak activity periods.  
+A logistic regression model was conducted using the SAGA solver with a maximum iteration of 500, ensuring reproducibility by setting a random state of 123. The model was then trained on the prepared training dataset.
+
+##### Confusion Matrix:
+- **True Positives (Class 1):** 18
+- **False Negatives (Class 1):** 6,454
+- **True Negatives (Class 0):** 48,067
+- **False Positives (Class 0):** 14
+
+This confusion matrix demonstrates the model's difficulty in identifying completed offers (positive class) while maintaining high accuracy for the incomplete offers (negative class).
 
 ---
 
-## Conclusion  
-This project demonstrates the effectiveness of using machine learning to enhance marketing strategies. By focusing on behavioral insights and deploying Gradient Boosting, businesses can improve offer completion rates and achieve higher ROI. Future efforts should explore advanced techniques like dynamic personalization and external data integration to refine predictions further.  
+##### Performance Metrics:
 
+1. **Accuracy:** **88.1%**
+   - The accuracy metric is biased toward the majority class (incomplete offers), making it less informative in this imbalanced dataset.
+
+2. **Precision (Class 1):** **0.56**
+   - Precision reflects that 56% of predicted completed offers were correct, indicating the presence of false positives.
+
+3. **Recall (Class 1):** **0.0027**
+   - Recall is extremely low for the completed offers, highlighting the model's inability to identify most instances of the minority class.
+
+4. **F1-Score (Class 1):** **0.005**
+   - The F1-score combines precision and recall and reflects poor performance in handling the minority class.
+
+---
+
+#### Hyperparameter Tuning Results:
+
+Best parameters from RandomizedSearchCV:
+- **Solver:** `lbfgs`
+- **Penalty:** `l2`
+- **Regularization Strength (C):** 10
+- **Max Iterations:** 500
+- **Class Weight:** Balanced
+
+The tuned model achieved a best F1-score of **0.41**, significantly improving minority class performance while maintaining balanced class weights.
+
+---
+
+#### Interpretations and Challenges
+
+1. **Key Features After Preprocessing:**
+   - The dataset comprised **24 features** after one-hot encoding the categorical variables and including scaled continuous features. 
+   - These features provide comprehensive representation but also introduce sparsity due to one-hot encoding.
+
+2. **One-Hot Encoding and Scaling:**
+   - One-hot encoding ensured categorical data was numerically represented without introducing ordinal relationships. 
+   - Feature scaling normalized the continuous variables, making the model less sensitive to the scale of input features and enhancing convergence during training.
+
+3. **Class Imbalance:**
+   - The model struggled with class imbalance, as evident from the low recall and F1-score for the minority class. Class weighting during training partially mitigated this issue.
+
+4. **Model Bias:**
+   - The high precision and recall for the majority class indicate a bias toward the negative class. This underscores the need for techniques to better address class imbalance.
+
+5. **Potential Improvements:**
+   - Implementing oversampling (e.g., SMOTE) or undersampling techniques.
+   - Exploring alternative algorithms, such as ensemble methods (Random Forest or Gradient Boosting), which may better handle class imbalance.
+   - Refining features through additional engineering or including domain-specific knowledge.
+
+This analysis highlights the preprocessing steps and key results, emphasizing the challenges posed by class imbalance and the need for further refinement to enhance minority class prediction.
+
+ 
+### Data Splitting and Logistic Regression Process: Results and Interpretations
+
+#### Data Splitting
+The dataset was divided into training (80%) and testing (20%) subsets to ensure the model's generalization capability. This approach allows for evaluating the model on unseen data while maintaining a large enough training set for learning patterns effectively. The random seed ensured reproducibility of results.
+
+---
+ 
+#### Random Forest Model
+A second model conducted is the Random Forest model, a robust ensemble learning algorithm designed to improve predictive accuracy and control overfitting. To optimize the model, a grid search was employed, tuning hyperparameters such as the number of trees (`n_estimators`), maximum tree depth (`max_depth`), minimum samples required for node splitting (`min_samples_split`), and features considered for the best split (`max_features`). Furthermore, the `class_weight` parameter was set to balanced, ensuring an adjustment to class imbalance in the dataset.
+
+The optimized Random Forest model achieved the following metrics:
+
+1. **Accuracy:** **80%**
+   - The model displayed solid overall accuracy, reflecting its ability to correctly predict both majority and minority class instances in the test set.
+
+2. **Precision (Class 1 - Completed Offers):** **0.32**
+   - Precision indicates that 32% of the completed offers predicted by the model were correct. This relatively low precision for the minority class suggests the presence of false positives.
+
+3. **Recall (Class 1 - Completed Offers):** **0.66**
+   - Recall highlights that 66% of actual completed offers were correctly identified by the model. Compared to logistic regression, this is a significant improvement in capturing the minority class.
+
+4. **F1-Score (Class 1):** **0.44**
+   - The F1-score balances precision and recall and shows a substantial enhancement over the logistic regression model. However, further improvement is needed to better balance the prediction of completed offers.
+
+5. **Class 0 Metrics (Incomplete Offers):**
+   - The majority class displayed high precision (**0.95**) and recall (**0.81**), resulting in a strong F1-score of **0.88**, confirming the model's effectiveness in identifying incomplete offers.
+
+### Key Observations and Challenges:
+- **Handling Class Imbalance:** The balanced class weights improved recall for completed offers compared to logistic regression. However, precision remained relatively low, signaling a need for further refinement.
+- **Strengths of Random Forest:** This algorithm demonstrated better handling of complex patterns in the data due to its ensemble nature, which combines predictions from multiple decision trees.
+- **Potential Improvements:** Additional strategies such as oversampling techniques (e.g., SMOTE) or boosting algorithms like Gradient Boosting or XGBoost could further enhance the model’s performance.
+
+Overall, the Random Forest model provided a better balance in predicting completed and incomplete offers compared to logistic regression, showcasing its suitability for handling imbalanced datasets with complex features.
+
+
+### Gradient Boosting Model: Overview and Results
+
+A Gradient Boosting model was the third classifier evaluated in this study. Gradient Boosting is a powerful ensemble learning algorithm that builds models sequentially, optimizing for errors made by prior models. This model is particularly effective for imbalanced datasets, as it incrementally improves predictions by minimizing the loss function.
+
+#### Model Tuning and Configuration
+
+The Gradient Boosting model was fine-tuned using RandomizedSearchCV to optimize its hyperparameters. The parameters considered for tuning included:
+- **Number of Boosting Stages (`n_estimators`):** Sampled between 50 and 300 to balance model complexity and overfitting risk.
+- **Learning Rate (`learning_rate`):** Sampled between 0.01 and 0.3, controlling the contribution of each tree.
+- **Tree Depth (`max_depth`):** Ranged between 3 and 10 to manage the complexity of individual trees.
+- **Minimum Samples for Splitting and Leaf Nodes:** Configured to ensure sufficient data in terminal nodes.
+- **Subsample Fraction:** Used to enhance model robustness by training trees on a subset of the data.
+
+The best parameters identified during cross-validation were:
+- **Learning Rate:** 0.221
+- **Number of Estimators:** 206
+- **Maximum Depth:** 3
+- **Minimum Samples Split:** 15
+- **Minimum Samples Leaf:** 7
+- **Subsample Fraction:** 0.928
+
+These parameters were selected to optimize the F1-score, which balances precision and recall.
+
+---
+
+#### Gradient Boosting Model Results
+
+##### Performance Metrics
+
+1. **Overall Accuracy:** **91%**
+   - The model achieved high accuracy, reflecting strong overall performance across both classes. However, given the dataset's class imbalance, accuracy alone is insufficient for evaluating the model's effectiveness.
+
+2. **F1-Score (Macro Average):** **0.78**
+   - The macro F1-score, which averages the F1-scores of both classes, demonstrates the model's improved ability to balance precision and recall across the majority and minority classes.
+
+3. **Majority Class (Label 0):**
+   - **Precision:** 0.94
+   - **Recall:** 0.96
+   - **F1-Score:** 0.95
+   - The model consistently identified incomplete offers, achieving high precision, recall, and F1-scores for the majority class.
+
+4. **Minority Class (Label 1):**
+   - **Precision:** 0.64
+   - **Recall:** 0.58
+   - **F1-Score:** 0.61
+   - The model demonstrated substantial improvement in predicting completed offers compared to the logistic regression and Random Forest models. While recall remains lower than desired, the precision and F1-scores indicate better performance in handling the minority class.
+
+---
+
+#### Interpretations and Challenges
+
+1. **Balanced Class Performance:**
+   - Gradient Boosting outperformed prior models by balancing performance between the two classes. The higher recall and F1-score for the minority class suggest that this model can better identify completed offers while maintaining strong performance for incomplete offers.
+
+2. **Hyperparameter Optimization:**
+   - The success of the Gradient Boosting model underscores the importance of careful hyperparameter tuning. By optimizing parameters such as the learning rate and subsample fraction, the model achieved a more robust representation of patterns in the data.
+
+3. **Class Imbalance:**
+   - While Gradient Boosting improved minority class recall compared to previous models, the class imbalance remains a challenge. Strategies such as oversampling the minority class or adjusting the loss function could further enhance the model's ability to handle imbalance.
+
+4. **Feature Importance:**
+   - Gradient Boosting inherently provides feature importance metrics, which can be analyzed to identify the most influential variables for predicting offer completion. This analysis could guide future feature engineering efforts.
+
+---
+### Support Vector Machine (SVM) Model: Overview and Results
+
+A **Support Vector Machine (SVM)** model was implemented using the **RBF kernel** for nonlinear decision boundaries, with a regularization parameter \( C = 1 \) and gamma set to 'scale' to handle data distribution effectively. The model was trained on the preprocessed training dataset and evaluated on the test dataset.
+
+#### Performance Results:
+
+1. **Accuracy:** **88%**
+   - The model achieved high overall accuracy due to its strong performance in identifying the majority class. However, this metric does not reflect the true performance due to the class imbalance.
+
+2. **Performance on the Majority Class (Label 0):**
+   - **Precision:** **88%**
+   - **Recall:** **100%**
+   - **F1-Score:** **94%**
+   - The model performed exceptionally well in predicting the majority class (incomplete offers), with perfect recall and high precision, signifying accurate identification of true negatives.
+
+3. **Performance on the Minority Class (Label 1):**
+   - **Precision, Recall, and F1-Score:** **0**
+   - The model failed to predict any true positives for the minority class (completed offers). This outcome reflects that the model is entirely biased toward the majority class, likely due to the severe class imbalance and insufficient corrective mechanisms.
+
+4. **Macro Average F1-Score:** **0.50**
+   - The macro F1-score highlights the significant disparity between the model's performance on the two classes, emphasizing the poor treatment of the minority class.
+
+#### Interpretations and Challenges:
+
+- **Imbalanced Performance:**
+   The SVM's inability to identify any instances of the minority class underscores its sensitivity to imbalanced datasets. While the overall accuracy is high, it is misleading as the model neglects the minority class entirely.
+
+- **Bias Toward the Majority Class:**
+   The perfect recall and high precision for the majority class indicate a strong bias, which is common for models trained on imbalanced datasets without appropriate handling strategies.
+
+#### Recommendations for Improvement:
+
+1. **Class Weight Adjustments:**
+   Incorporating class weights to penalize misclassification of the minority class can help shift the focus of the model.
+
+2. **Oversampling/Undersampling:**
+   Techniques such as SMOTE or undersampling the majority class can create a more balanced dataset for training.
+
+3. **Kernel and Parameter Optimization:**
+   Exploring other kernels, such as polynomial or linear kernels, combined with hyperparameter tuning, may improve the model's ability to generalize across both classes.
+
+4. **Alternative Models:**
+   Ensemble methods like Random Forest or Gradient Boosting may better capture complex relationships and handle class imbalance more effectively.
+
+This analysis demonstrates the limitations of the SVM model in addressing the class imbalance challenge, highlighting the need for further refinement to achieve balanced performance.
+
+### XGBoost Model: Overview and Results
+
+The XGBoost model, renowned for its efficiency in handling imbalanced datasets and complex patterns, was employed to further address the limitations observed in previous models. Hyperparameter tuning was conducted using RandomizedSearchCV, optimizing for the F1-score to ensure better balance between precision and recall for the minority class.
+
+---
+
+#### Performance Metrics:
+
+1. **Overall Accuracy:** **88%**
+   - The model demonstrates strong generalization capabilities with a high accuracy score, effectively classifying the majority of instances in the dataset.
+
+2. **Majority Class (Label 0):**
+   - **Precision:** **0.99**
+   - **Recall:** **0.87**
+   - **F1-Score:** **0.93**
+   - The model maintains excellent precision and recall for the majority class, reflecting minimal false positives and effective identification of most instances.
+
+3. **Minority Class (Label 1):**
+   - **Precision:** **0.49**
+   - **Recall:** **0.91**
+   - **F1-Score:** **0.64**
+   - The minority class results indicate significant improvement, especially in recall, highlighting the model's ability to identify a substantial proportion of completed offers. However, precision still suggests some degree of false positives, which could be further refined.
+
+4. **Macro Average F1-Score:** **0.78**
+   - This balanced metric reveals that XGBoost provides improved performance across both classes compared to earlier models.
+
+5. **Weighted Average F1-Score:** **0.89**
+   - Incorporating class imbalance, the weighted average demonstrates the model's overall robustness in handling the dataset's distribution.
+
+---
+
+#### Hyperparameter Optimization:
+
+The best parameters identified through RandomizedSearchCV were:
+- **Subsample:** 1.0
+- **Scale Position Weight:** 7.4 (balancing class weights based on distribution)
+- **Number of Estimators:** 200
+- **Max Depth:** 5
+- **Learning Rate:** 0.2
+- **Colsample by Tree:** 1.0
+
+These parameters provided a model tailored to address the dataset's challenges, particularly class imbalance, ensuring both minority and majority classes were effectively represented.
+
+---
+
+#### Interpretations and Implications:
+
+1. **Strengths:**
+   - The XGBoost model successfully balanced the competing demands of precision and recall, especially for the minority class. With a recall of **0.91**, it outperformed previous models in capturing completed offers, making it a suitable candidate for identifying potential customer engagement.
+   - The flexibility of XGBoost, combined with hyperparameter tuning, allowed for significant performance enhancements.
+
+2. **Challenges:**
+   - Precision for the minority class, though improved, still indicates a need for further refinement. Strategies such as additional feature engineering or further tuning of parameters could help minimize false positives.
+
+3. **Overall Value:**
+   - XGBoost's adaptive learning capabilities and optimized configuration underscore its effectiveness in addressing the limitations of other classifiers. The results highlight its potential as a robust model for real-world applications where identifying minority classes is critical.
+
+   ---
+
+   ### Model Comparison
+
+The analysis highlights XGBoo### Model Performance Summary Table
+
+| **Model**              | **Precision (Minority Class)** | **Recall (Minority Class)** | **F1 Score (Minority Class)** | **Precision (Majority Class)** | **Recall (Majority Class)** | **F1 Score (Majority Class)** | **Overall Accuracy** |
+|-------------------------|-------------------------------|-----------------------------|-------------------------------|--------------------------------|-----------------------------|-------------------------------|-----------------------|
+| Logistic Regression     | 0.26                         | 0.99                        | 0.41                          | 0.88                          | 0.62                        | 0.73                          | 0.67                  |
+| Random Forest           | 0.32                         | 0.66                        | 0.44                          | 0.95                          | 0.81                        | 0.88                          | 0.80                  |
+| Gradient Boosting       | 0.64                         | 0.58                        | 0.61                          | 0.94                          | 0.96                        | 0.95                          | 0.91                  |
+| Support Vector Machine  | 1.00                         | 0.00                        | 0.00                          | 0.88                          | 1.00                        | 0.94                          | 0.88                  |
+| XGBoost                 | 0.49                         | 0.91                        | 0.64                          | 0.99                          | 0.87                        | 0.93                          | 0.88                  |
+
+This table provides a detailed breakdown of key performance metrics, comparing the models' ability to handle both the minority and majority classes. The metrics highlight the strengths and weaknesses of each model in the context of this dataset.
+
+---
+
+### Summary of Results:
+
+#### Logistic Regression:
+- Achieved **high recall (0.99)** for the minority class but suffered from poor precision (0.26), resulting in a low F1 score (0.41).
+- The model demonstrated bias toward identifying the minority class, often misclassifying the majority class.
+
+#### Random Forest:
+- Balanced **precision (0.32)** and **recall (0.66)** for the minority class, resulting in a modest F1 score (0.44).
+- Delivered **better overall accuracy (0.80)** compared to Logistic Regression, with reasonable performance on both classes.
+
+#### Gradient Boosting:
+- Emerged as the **top-performing model**, achieving the **highest overall accuracy (0.91)** and a strong F1 score (0.61) for the minority class.
+- Balanced **precision (0.64)** and **recall (0.58)**, making it the most robust model for this dataset.
+
+#### Support Vector Machine (SVM):
+- Struggled significantly with the minority class, showing **zero recall** and F1 score despite perfect precision (1.00) for the majority class.
+- This model failed to generalize well due to the dataset's class imbalance.
+
+#### XGBoost:
+- Achieved the **second-best F1 score (0.64)** for the minority class, with **high recall (0.91)** but moderate precision (0.49).
+- Demonstrated potential for further improvement, achieving **competitive overall accuracy (0.88)**.
+
+---
+
+### Key Takeaways:
+- **Gradient Boosting** stands out as the best model for this analysis, achieving a good balance across all metrics and excelling in overall accuracy.
+- **XGBoost** shows promise, particularly in handling the minority class, but could benefit from further tuning.
+- **Logistic Regression** and **Random Forest** offer adequate baseline performance but lag behind Gradient Boosting and XGBoost.
+- **SVM** underperformed significantly, highlighting its unsuitability for this imbalanced dataset without advanced preprocessing.
+
+---
+
+### Future Directions:
+1. **Sampling Techniques:**
+   - Utilize oversampling (e.g., SMOTE) or undersampling methods to address class imbalance.
+2. **Feature Engineering:**
+   - Derive additional features or explore interactions to improve representation and model performance.
+3. **Hyperparameter Optimization:**
+   - Conduct more granular hyperparameter searches to refine Gradient Boosting and XGBoost models.
+4. **Alternative Models:**
+   - Experiment with ensemble techniques, such as stacking, to leverage the strengths of multiple models.
+
+These strategies aim to further enhance minority class predictions while maintaining strong overall accuracy, ensuring applicability to real-world scenarios.st as a strong contender in this study, offering a compelling balance of accuracy, recall, and precision, though it falls slightly short of the top-performing Gradient Boosting model.
+
+
+
+
+#### Conclusions
+
+The Gradient Boosting model demonstrated the best overall performance among the three models evaluated, effectively balancing the needs of precision and recall for both classes. While there is still room for improvement, particularly in recall for the minority class, this model provides a solid foundation for addressing the challenges posed by the dataset's class imbalance. Further refinements, such as feature selection or alternative data sampling techniques, could enhance its predictive power.
 ---
 
 ## References  
