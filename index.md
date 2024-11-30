@@ -108,6 +108,114 @@ By breaking down and preprocessing this dataset, we can generate valuable insigh
 
 ---
 
+Here’s a structured summary that you can add to your `index.md` for the portfolio dataset, following the style used for the transcript dataset:
+
+---
+
+
+## Portfolio Dataset
+
+The `portfolio` dataset contains 10 unique promotional offers, each with details on the **reward amount**, **distribution channels**, **difficulty level**, **duration**, **offer type**, and an **identifier**.
+
+### Key Observations
+
+1. **Reward Amount**:
+   - Unique values: `10`, `5`, `3`, `2`, and `0`.
+   - Indicates a range of incentives, with larger rewards likely targeting more significant customer engagement.
+
+2. **Difficulty Level**:
+   - Unique values: `20`, `10`, `7`, `5`, and `0`.
+   - Reflects the spending thresholds customers need to meet to qualify for the reward.
+
+3. **Duration**:
+   - Ranges from `3` to `10` days, with a mean of `6.5`.
+   - Indicates the time period customers have to engage with the promotional offer.
+
+4. **Channels**:
+   - Offers are distributed across platforms, including **email**, **mobile**, **web**, and **social** media.
+
+5. **Offer Types**:
+   - Includes **BOGO** (buy-one-get-one), **discount**, and **informational** offers.
+
+### Statistical Summary
+
+The `portfolio.describe()` output provides the following statistical summary:
+
+| Metric       | Reward | Difficulty | Duration |
+|--------------|--------|------------|----------|
+| **Count**    | 10     | 10         | 10       |
+| **Mean**     | 4.2    | 7.7        | 6.5      |
+| **Std Dev**  | 3.5    | 5.8        | 2.3      |
+| **Min**      | 0      | 0          | 3        |
+| **25%**      | 0      | 5          | 5        |
+| **50%**      | 4      | 8.5        | 7        |
+| **75%**      | 5      | 10         | 7        |
+| **Max**      | 10     | 20         | 10       |
+
+### Additional Information
+
+- The dataset combines promotional strategies with varying rewards, difficulties, and durations to target diverse customer segments.
+- Channels such as **email**, **mobile**, and **web** are utilized to increase reach and engagement.
+
+---
+### Profile Dataset Overview
+
+The `profile` dataset provides demographic and membership information for 17,000 customers. It contains five columns that help analyze customer characteristics and their potential influence on marketing strategies. Below is a summary of the dataset:
+
+---
+
+#### **Key Columns**
+1. **`gender`**: Gender of the customer. 
+   - Values: Male, Female, Other
+   - Missing: 2,175 entries
+
+2. **`age`**: Age of the customer.
+   - Range: 18 to 118 (118 is likely a placeholder for missing values)
+   - Median: 58 years
+
+3. **`id`**: Unique identifier for each customer.
+   - Example: "68be06ca..."; no missing values.
+
+4. **`became_member_on`**: Date when the customer joined, formatted as `YYYYMMDD`.
+   - Example: 20170715; no missing values.
+
+5. **`income`**: Annual income of the customer (in dollars).
+   - Range: $30,000 to $120,000
+   - Missing: 2,175 entries
+
+---
+
+#### **Exploration Highlights**
+1. **Missing Data**:
+   - Missing values are found in `gender` and `income`.
+   - A **heatmap** was used to visualize the distribution of missing data.
+![MissingValues](images/MissingValues1.png)
+
+2. **Gender Distribution**:
+   - Majority of customers are Male (8,484) and Female (6,129), with a small proportion (212) categorized as "Other."
+   - A **bar plot** illustrates this distribution, highlighting a slight gender imbalance favoring males.
+![Gender](images/Gender.png)
+
+3. **Age Distribution**:
+   - The **box plot** of `age` shows the median is 58 years, with an interquartile range of 45 to 73 years.
+   - Ages were divided into categories (e.g., Young Adult, Mid Career) using bins for better segmentation.
+![Age](images/Age.png)
+4. **Income Distribution**:
+   - The **box plot** of `income` shows most customers earn between $50,000 and $75,000, with a few high-income outliers.
+   - A **violin plot** of `income` by age category reveals that Mid Career customers tend to have the highest earnings.
+![Income](images/Income.png)
+
+5. **Correlation Between Age and Income**:
+   - A **hexbin plot** demonstrates the relationship between age and income, showing a peak in earnings during Mid Career and a gradual decline afterward.
+![HexbinPlot](images/HexbinPlot.png)
+---
+
+#### **Insights**
+- Customers in their Mid Career (40-55 years) tend to earn more and are likely key targets for high-value campaigns.
+- Gender imbalance and missing income data should be addressed for more comprehensive insights.
+- Membership trends can be analyzed using the `became_member_on` column to identify periods of high customer acquisition.
+
+The `profile` dataset provides foundational insights into customer demographics, enabling the development of targeted marketing strategies and personalized campaigns.
 ## Data Preparation  
 
 ### Preprocessing  
