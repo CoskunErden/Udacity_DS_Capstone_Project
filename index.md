@@ -211,6 +211,7 @@ The `profile` dataset provides demographic and membership information for 17,000
 
 6. **Violin Plot Analysis of Age and Income**
 ![ViolinPlot](images/ViolinPlot.png)
+
 The violin plot provides a detailed visualization of **income distribution** across different **age categories** in the `profile` dataset. Each violin shape represents an age group, with the width of the plot indicating the density of income values within that group. The median income values are marked by white dots inside the violins, and the spread of data is captured by the shape.
 
 ---
@@ -263,20 +264,91 @@ The violin plot highlights the importance of segmenting customers by age and inc
 The `profile` dataset provides foundational insights into customer demographics, enabling the development of targeted marketing strategies and personalized campaigns.
 ## Data Preparation  
 
-### Preprocessing  
-1. **Handling Missing Values:**  
-   - **Gender:** Replaced missing values with "Unknown"  
-   - **Age:** Imputed median values for ages encoded as 118  
-   - **Reward Earned:** Set to 0 for events without rewards  
+### Preprocessing and Feature Engineering Summary
 
-2. **Feature Engineering:**  
-   - **Channel Indicators:** Created binary variables for delivery channels (web, email, mobile, social)  
-   - **Age Categories:** Grouped ages into bins such as 'Young Adult,' 'Mid-Career,' and 'Senior'  
-   - **Offer Completed:** Added a binary indicator for successful offer completions  
+#### Transcript Dataset Preprocessing
+The preprocessing and feature engineering of the `transcript` dataset began with transforming the `value` column, which initially contained unstructured dictionary data, into meaningful and interpretable features:
 
-3. **Scaling and Encoding:**  
-   - Normalized continuous variables such as income and duration using StandardScaler  
-   - One-hot encoded categorical features like gender and offer type  
+1. **Created `offer_id` Column**:  
+   - The `offer_id` was extracted from the `value` column. This unique identifier enabled tracking of specific offers across various user interactions, such as viewing, receiving, and completing offers.
+
+2. **Created `amount` Column**:  
+   - Transaction amounts were extracted and stored in a new `amount` column. This feature provides monetary details specifically tied to transaction-related events in the dataset.
+
+3. **Created `reward` Column**:  
+   - Rewards earned during the completion or redemption of offers were extracted into a new `reward` column. This feature quantifies the benefits users receive from engaging with offers.
+
+---
+
+#### Handling Missing Values in Extracted Features
+- The newly created columns (`amount` and `reward`) contained missing values (`NaN`) for events that were not directly related to transactions or rewards (e.g., offer viewing or receiving). These missing values will be handled appropriately to ensure the features remained robust and relevant for further analysis.
+
+- This step improved the interpretability of the dataset by splitting the dictionary-based `value` column into structured components that could be directly analyzed.
+
+---
+
+#### Additional Insights Gained Through Feature Engineering
+By creating the `offer_id`, `amount`, and `reward` columns, the dataset became more granular and interpretable. This structured representation of user interactions allows for deeper insights into user behavior and offer performance in subsequent analysis and modeling stages.
+
+
+The preprocessing journey continued with an exploration of the `amount` column, which displayed a significant skew and extreme outliers. A **box plot** highlighted these anomalies, showing that a few large transaction amounts were disproportionately influencing the distribution (Figure 1). To address this, winsorization was applied, capping the values at the 95th percentile. This adjustment brought the dataset into a more balanced range while preserving the overall distribution. A post-winsorization **box plot** (Figure 2) and a **histogram** (Figure 3) confirmed that the adjustments effectively reduced the impact of outliers.
+
+---
+
+**Figure 1**: Box Plot of the `amount` Column (Before Winsorization)  
+![Box Plot Before Winsorization](images/BoxAmountBefore.png)
+
+**Figure 2**: Box Plot of the `amount` Column (After Winsorization)  
+![Box Plot After Winsorization](images/BoxAmountAfterWin.png)
+
+**Figure 3**: Histogram of the `amount` Column (After Winsorization)  
+![Histogram](images/HistogramAmount.png)
+
+---
+
+The relationships between key features were then explored using scatter plots with regression lines. For instance, a positive but variable trend was observed between **age and income** (Figure 4), where income generally increased with age. However, when examining **membership duration** against both **age** (Figure 5) and **income** (Figure 6), no significant patterns emerged, suggesting that membership duration is relatively stable across these variables. These findings provide important insights into how customer attributes interact with one another.
+
+---
+
+**Figure 4**: Scatter Plot of Age vs. Income with Regression Line  
+![Age vs. Income](images/AgevsIncome.png)
+
+**Figure 5**: Scatter Plot of Membership Duration vs. Age with Regression Line  
+![Membership Duration vs. Age](images/MembershipDurationvsAge.png)
+
+**Figure 6**: Scatter Plot of Membership Duration vs. Income with Regression Line  
+![Membership Duration vs. Income](images/MembershipDurationvsIncome.png)
+
+---
+
+A **bar plot** was created to visualize the distribution of offer types across different age categories (Figure 7). The analysis revealed that "BOGO" and "Discount" offers were the most popular across all age groups, with higher counts observed in the "mid-career" and "approaching retirement" segments. On the other hand, "Informational" offers were less frequent but evenly distributed across various life stages, highlighting their selective use.
+
+---
+
+**Figure 7**: Distribution of Offer Types Across Age Categories  
+![Offer Types](images/DistributionAcrossAgeCategories.png)
+
+---
+
+A **correlation heatmap** of numerical features (Figure 8) was then generated to identify significant relationships. It revealed a strong positive correlation between "difficulty" and "duration," indicating that more challenging offers tend to have longer durations. A moderate negative correlation was also observed between "reward earned" and "duration," suggesting that shorter offers might lead to higher rewards.
+
+---
+
+**Figure 8**: Correlation Heatmap of Selected Numeric Variables  
+![Correlation Heatmap](images/HeatmapofSelectedNumericValues.png)
+
+---
+
+To address missing data, the dataset was analyzed for completeness. The `offer_type` column showed a clear breakdown: "BOGO" had 71,617 instances, "Discount" had 69,898, and "Informational" had 26,066. Missing values were identified and handled to ensure robustness in subsequent analyses.
+
+The dataset was then segmented into two subsets: users who completed offers and earned rewards, and those who received offers but did not complete them. This segmentation provides a focused lens to examine the factors that influence offer completion. The **completed subset** contained 33,579 entries, while the **incomplete subset** had 272,955 entries, underscoring the challenge of driving higher offer engagement.
+
+New features were engineered to enhance the dataset's utility. **Binary columns** were created to indicate the presence of specific engagement channels such as "web," "email," "mobile," and "social," enabling a detailed analysis of how different channels influence user behavior. Additionally, a binary target variable, `offer_completed`, was introduced, categorizing rows as 1 for completed offers and 0 for other events. Descriptive statistics for this variable revealed that only 10.95% of offers were completed, providing a baseline for predictive modeling.
+
+---
+
+
+
 
 ### Exploratory Data Analysis  
 - **Correlations:**  
