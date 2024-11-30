@@ -747,23 +747,9 @@ This table provides a detailed breakdown of key performance metrics, comparing t
 
 ---
 
-### Future Directions:
-1. **Sampling Techniques:**
-   - Utilize oversampling (e.g., SMOTE) or undersampling methods to address class imbalance.
-2. **Feature Engineering:**
-   - Derive additional features or explore interactions to improve representation and model performance.
-3. **Hyperparameter Optimization:**
-   - Conduct more granular hyperparameter searches to refine Gradient Boosting and XGBoost models.
-4. **Alternative Models:**
-   - Experiment with ensemble techniques, such as stacking, to leverage the strengths of multiple models.
-
-These strategies aim to further enhance minority class predictions while maintaining strong overall accuracy, ensuring applicability to real-world scenarios.st as a strong contender in this study, offering a compelling balance of accuracy, recall, and precision, though it falls slightly short of the top-performing Gradient Boosting model.
-
-For the index.md file, you can structure the content as follows:
-
----
-
 ## Feature Importance Analysis
+
+![FeatureImportance](images/FeatureImportance.png)
 
 ### Key Observations:
 
